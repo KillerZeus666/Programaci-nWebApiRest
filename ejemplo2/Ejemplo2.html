@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Municipios por Departamento</title>
+    <style>
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">Municipios por Departamento</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Departamento</th>
+                <th>Cantidad de Municipios</th>
+            </tr>
+        </thead>
+        <tbody id="departmentTable">
+            <!-- Los datos se agregarán aquí dinámicamente -->
+        </tbody>
+    </table>
+
+    <script>
+        // Función para obtener los datos del servicio web
+        fetch("https://www.datos.gov.co/resource/gdxc-w37w.json")
+            .then(response => response.json())
+            .then(data => {
+                // Agrupar y contar registros por departamento (dpto)
+                const groupByDepartment = data.reduce((acc, item) => {
+                    const depto = item.dpto;
+                    if (!acc[depto]) {
+                        acc[depto] = 0;
+                    }
+                    acc[depto]++;
+                    return acc;
+                }, {});
+
+                // Mostrar los datos en la tabla
+                const tableBody = document.getElementById('departmentTable');
+                for (const depto in groupByDepartment) {
+                    const row = document.createElement('tr');
+                    const deptoCell = document.createElement('td');
+                    const countCell = document.createElement('td');
+
+                    deptoCell.textContent = depto;
+                    countCell.textContent = groupByDepartment[depto];
+
+                    row.appendChild(deptoCell);
+                    row.appendChild(countCell);
+                    tableBody.appendChild(row);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    </script>
+
+</body>
+</html>
